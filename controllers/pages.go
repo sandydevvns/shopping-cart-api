@@ -34,6 +34,13 @@ type CategoryMenu struct {
 	Child  []CategoryMenu
 }
 
+type MenuList []struct {
+	Id     int
+	Name   string
+	Parent int
+	Child  []CategoryMenu
+}
+
 func PagesRoutes(routes *gin.RouterGroup) {
 	routes.GET("", Index)
 	routes.GET("/login", SignIn)
@@ -66,16 +73,20 @@ func Index(c *gin.Context) {
 	database.DB.Table("categories").Select("categories.id,categories.name,categories.parent_id,f.filename,f.file_path").
 		Joins("left join file_uploads as f on f.category_id = categories.id").
 		Group("categories.id").Find(&CategoryList)
-	//log.Printf("category data===>%#v", CategoryList)
+	log.Printf("category data===>%#v", CategoryList)
+
 	for _, val := range CategoryList {
 		catMenuList[val.ID] = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
 		if val.ParentId == 0 {
 			result[val.ID] = Result{Id: val.ID, Name: val.Name, Filename: val.Filename, FilePath: val.FilePath}
+			//catMenuList[val.ID].Child = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
+		} else {
+			//MenuList[val.ID] = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
 		}
 	}
 	var featureProd []models.ProductList
 	database.DB.Table("products").Limit(8).Scan(&featureProd)
-
+	log.Printf("result===>%#v", result)
 	data["categoryList"] = result
 	data["catMenuList"] = catMenuList
 	data["featureProd"] = featureProd

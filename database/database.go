@@ -28,13 +28,12 @@ func Connection() *gorm.DB {
 	DB_HOST := os.Getenv("DB_HOST")
 	DB_PORT := os.Getenv("DB_PORT")
 	DB_NAME := os.Getenv("DB_NAME")
-	// DB_USER := os.Getenv("DB_USER")
-	// DB_PASS := os.Getenv("DB_PASS")
+	DB_USER := os.Getenv("DB_USER")
+	DB_PASS := os.Getenv("DB_PASS")
 
-	dbCreds := Conn()
-	// DB_NAME := dbCreds.BbInstanceIdentifier
-	DB_USER := dbCreds.Username
-	DB_PASS := dbCreds.Password
+	// dbCreds := Conn()
+	// DB_USER := dbCreds.Username
+	// DB_PASS := dbCreds.Password
 	dsn := DB_USER + ":" + DB_PASS + "@tcp(" + DB_HOST + ":" + DB_PORT + ")/" + DB_NAME + "?charset=utf8mb4&parseTime=True&loc=Local"
 	log.Println("dns==========>", dsn)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
