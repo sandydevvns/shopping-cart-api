@@ -16,7 +16,7 @@ require (
 	github.com/joho/godotenv v1.4.0
 	golang.org/x/crypto v0.4.0
 	gorm.io/driver/mysql v1.4.4
-	gorm.io/gorm v1.24.2
+	gorm.io/gorm v1.31.0
 )
 
 require (
@@ -49,7 +49,7 @@ require (
 	github.com/ugorji/go/codec v1.2.7 // indirect
 	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/sys v0.6.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/text v0.20.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
