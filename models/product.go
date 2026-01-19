@@ -12,7 +12,7 @@ type Products struct {
 	Title    string `gorm:"size:255;not null"`
 	Details  string `gorm:"not null"`
 	SortDesc string `gorm:"not null" text:"html"`
-	Slug     string `gorm:"size:255;unique_index;not null"`
+	Slug     string `gorm:"type:varchar(255);uniqueIndex;not null"`
 	Price    uint32 `gorm:"not null"`
 	Quantity int    `gorm:"not null"`
 	CatID    int    `gorm:"not null"`

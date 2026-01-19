@@ -21,10 +21,10 @@ type Pages struct {
 }
 
 type Result struct {
-	Id       int    `json:"id"`
-	Name     string `json:"name"`
-	Filename string `json:"filename"`
-	FilePath string `json:"file_path"`
+	Id     int    `json:"id"`
+	Name   string `json:"name"`
+	Parent int
+	Child  []CategoryMenu
 }
 
 type CategoryMenu struct {
@@ -41,6 +41,14 @@ type MenuList []struct {
 	Child  []CategoryMenu
 }
 
+type Category struct {
+	ID       int
+	Name     string
+	ParentId int
+	Filename string
+	FilePath string
+}
+
 func PagesRoutes(routes *gin.RouterGroup) {
 	routes.GET("", Index)
 	routes.GET("/login", SignIn)
@@ -54,9 +62,10 @@ func PagesRoutes(routes *gin.RouterGroup) {
 }
 
 func AboutUs(c *gin.Context) {
-	data := make(map[string]string)
+	data := make(map[string]interface{})
 	data["title"] = "About Us page "
 	data["content"] = "This Is the About Us Page"
+	data["catMenuList"], data["categoryList"] = headerMenu()
 	c.HTML(http.StatusOK, "about.html", gin.H{
 		"content": data,
 	})
@@ -66,29 +75,11 @@ func Index(c *gin.Context) {
 	data := make(map[string]interface{})
 	data["title"] = "index page "
 	data["content"] = "this is the index page"
-	var CategoryList []models.CatagoryList
 
-	result := make(map[int]Result)
-	catMenuList := make(map[int]CategoryMenu)
-	database.DB.Table("categories").Select("categories.id,categories.name,categories.parent_id,f.filename,f.file_path").
-		Joins("left join file_uploads as f on f.category_id = categories.id").
-		Group("categories.id").Find(&CategoryList)
-	log.Printf("category data===>%#v", CategoryList)
-
-	for _, val := range CategoryList {
-		catMenuList[val.ID] = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
-		if val.ParentId == 0 {
-			result[val.ID] = Result{Id: val.ID, Name: val.Name, Filename: val.Filename, FilePath: val.FilePath}
-			//catMenuList[val.ID].Child = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
-		} else {
-			//MenuList[val.ID] = CategoryMenu{Id: val.ID, Name: val.Name, Parent: val.ParentId}
-		}
-	}
 	var featureProd []models.ProductList
 	database.DB.Table("products").Limit(8).Scan(&featureProd)
-	log.Printf("result===>%#v", result)
-	data["categoryList"] = result
-	data["catMenuList"] = catMenuList
+	//log.Printf("result===>%#v", result)
+	data["catMenuList"], data["categoryList"] = headerMenu()
 	data["featureProd"] = featureProd
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
@@ -100,6 +91,7 @@ func Shop(c *gin.Context) {
 	data := make(map[string]interface{})
 	data["title"] = "products list "
 	data["content"] = "this is the products list"
+	data["catMenuList"], data["categoryList"] = headerMenu()
 
 	db := database.DB
 	var prodLists []models.ProductList
@@ -132,7 +124,7 @@ func ShopDetails(c *gin.Context) {
 		db.Table("user_carts").Where("user_id", userId).Where("product_id", productId).First(&carts)
 		data["carts"] = carts
 	}
-
+	data["catMenuList"], data["categoryList"] = headerMenu()
 	c.HTML(http.StatusOK, "detail.html", gin.H{
 		"content":        data,
 		"prodDetails":    prodDetails,
@@ -211,10 +203,10 @@ func Carts(c *gin.Context) {
 }
 
 func SignIn(c *gin.Context) {
-	data := make(map[string]string)
+	data := make(map[string]interface{})
 	data["title"] = "Sigin/SignUp "
 	data["content"] = "This Is the Login Page"
-
+	data["catMenuList"], data["categoryList"] = headerMenu()
 	store := ginsession.FromContext(c)
 	sessemail, ok := store.Get("email")
 	log.Println("emails sessison===", sessemail, ok)
@@ -316,4 +308,43 @@ func addCards(ctx *gin.Context) {
 		})
 		return
 	}
+}
+
+func headerMenu() (map[int]Result, []Category) {
+	var CategoryList []Category
+	result := make(map[int]Result)
+	catMenuList := make(map[int]CategoryMenu)
+	database.DB.Table("categories").Select("categories.id,categories.name,categories.parent_id,f.filename,f.file_path").
+		Joins("left join file_uploads as f on f.category_id = categories.id").
+		Order("categories.id asc").Find(&CategoryList)
+	//Group("categories.id").Find(&CategoryList)
+	log.Printf("category data===>%#v", CategoryList)
+	for _, val := range CategoryList {
+		catMenuList[val.ID] = CategoryMenu{
+			Id:     val.ID,
+			Name:   val.Name,
+			Parent: val.ParentId,
+		}
+
+		if val.ParentId == 0 {
+			result[val.ID] = Result{
+				Id:     val.ID,
+				Name:   val.Name,
+				Parent: val.ParentId,
+				Child:  []CategoryMenu{},
+			}
+		} else {
+			parent, exists := result[val.ParentId]
+			if exists {
+				child := CategoryMenu{
+					Id:     val.ID,
+					Name:   val.Name,
+					Parent: val.ParentId,
+				}
+				parent.Child = append(parent.Child, child)
+				result[val.ParentId] = parent
+			}
+		}
+	}
+	return result, CategoryList
 }
