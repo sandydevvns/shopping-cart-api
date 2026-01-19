@@ -15,8 +15,8 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.4.0
 	golang.org/x/crypto v0.4.0
-	gorm.io/driver/mysql v1.4.4
-	gorm.io/gorm v1.24.2
+	gorm.io/driver/mysql v1.5.2
+	gorm.io/gorm v1.25.2-0.20230530020048-26663ab9bf55
 )
 
 require (
@@ -34,15 +34,16 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.0 // indirect
 	github.com/go-playground/universal-translator v0.18.0 // indirect
-	github.com/go-sql-driver/mysql v1.6.0 // indirect
+	github.com/go-sql-driver/mysql v1.7.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/modern-go/concurrent v0.0.0-20180228061459-e0a39a4cb421 // indirect
+	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.1 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
